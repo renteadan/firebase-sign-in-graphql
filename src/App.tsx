@@ -1,39 +1,35 @@
-import React, { useState, useEffect } from 'react';
-import logo from './logo.svg';
+import React from 'react';
+import {useState} from 'react';
 import './App.css';
+import {GoogleAuthProvider, getAuth, signInWithPopup,
+  User, onAuthStateChanged} from 'firebase/auth';
 
-interface AppProps {}
+interface AppProps { }
 
-function App({}: AppProps) {
-  // Create the count state.
-  const [count, setCount] = useState(0);
-  // Create the counter (+1 every second).
-  useEffect(() => {
-    const timer = setTimeout(() => setCount(count + 1), 1000);
-    return () => clearTimeout(timer);
-  }, [count, setCount]);
-  // Return the App component.
+function App(props: AppProps) {
+  const [user, setUser] = useState<null | User>(null);
+  const provider = new GoogleAuthProvider();
+  provider.addScope('https://www.googleapis.com/auth/userinfo.email');
+  provider.addScope('https://www.googleapis.com/auth/userinfo.profile');
+  const auth = getAuth();
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      setUser(user);
+      console.log(user.getIdToken());
+    } else {
+      setUser(null);
+    }
+  });
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <p>
-          Page has been open for <code>{count}</code> seconds.
-        </p>
-        <p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </p>
-      </header>
+      {user ?
+      (<div>
+        <p>Your email is {user.email}</p>
+        <button onClick={() => auth.signOut()}>Sign out</button>
+      </div>) :
+      (<div>
+        <p>You are not logged in</p>
+        <button onClick={() => signInWithPopup(auth, provider)}>Sign in</button></div>)}
     </div>
   );
 }
