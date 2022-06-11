@@ -4,6 +4,13 @@ import App from './App';
 import './index.css';
 import {initializeApp} from 'firebase/app';
 import {getAnalytics} from 'firebase/analytics';
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+} from 'react-router-dom';
+import Dashboard from './pages/Dashboard';
+import Login from './pages/Login';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyDXAW6QG1rTgaVQIwS-sF7C7WeNFxvG4ws',
@@ -21,7 +28,13 @@ getAnalytics(app);
 
 ReactDOM.render(
     <React.StrictMode>
-      <App />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<App/>} />
+          <Route path="/login" element={<Login/>} />
+          <Route path="/dashboard" element={<Dashboard/>} />
+        </Routes>
+      </BrowserRouter>
     </React.StrictMode>,
     document.getElementById('root'),
 );
